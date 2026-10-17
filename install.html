@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تثبيت My Library</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b0f">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #000; color: #111;
+         font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+         display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; }
+  .brand { color: #fff; font-size: 30px; font-weight: 800; letter-spacing: 2px; margin-bottom: 28px; text-align: center; }
+  .brand small { display: block; font-size: 11px; letter-spacing: 6px; color: #bbb; font-weight: 400; margin-top: 4px; }
+  .card { background: #fff; border-radius: 18px; padding: 22px; width: 100%; max-width: 420px; }
+  .head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .head img { width: 56px; height: 56px; border-radius: 14px; }
+  .head h1 { margin: 0; font-size: 20px; }
+  .head p { margin: 2px 0 0; color: #777; font-size: 13px; }
+  ol { margin: 0 0 14px; padding-inline-start: 20px; line-height: 2; font-size: 15px; }
+  .note { color: #777; font-size: 12.5px; line-height: 1.7; margin: 0; }
+  #installBtn { display: none; width: 100%; margin-top: 16px; padding: 13px; border: 0; border-radius: 12px;
+                background: #e11d2a; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .web { margin-top: 22px; color: #bbb; font-size: 14px; }
+  .ios { display: none; }
+</style>
+</head>
+<body>
+  <div class="brand">MY LIBRARY<small>VIDEO VAULT</small></div>
+
+  <div class="card">
+    <div class="head">
+      <img src="icons/icon-192.png" alt="">
+      <div>
+        <h1>تطبيق My Library</h1>
+        <p>مكتبة الفيديوهات والمواقع</p>
+      </div>
+    </div>
+
+    <ol class="android">
+      <li>افتح اللينك ده من <b>Google Chrome</b>.</li>
+      <li>اضغط على النقط التلاتة <b>⋮</b> فوق.</li>
+      <li>اختار <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    </ol>
+    <ol class="ios">
+      <li>افتح اللينك ده من <b>Safari</b>.</li>
+      <li>اضغط على زر <b>المشاركة</b> ⬆️ تحت.</li>
+      <li>اختار <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    </ol>
+    <p class="note">بعد التنزيل افتح أيقونة My Library من الشاشة الرئيسية، وهتفتح زي أي تطبيق.</p>
+
+    <button id="installBtn">📲 ثبّت التطبيق دلوقتي</button>
+  </div>
+
+  <a class="web" href="index.html?web" onclick="sessionStorage.setItem('skipInstall','1')">أو ادخل من المتصفح</a>
+
+<script>
+  // آيفون: نوري خطوات Safari
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+    document.querySelector('.android').style.display = 'none';
+    document.querySelector('.ios').style.display = 'block';
+  }
+  // لو متثبت أصلاً روح على التطبيق
+  if (matchMedia('(display-mode: standalone)').matches) location.replace('index.html');
+
+  // زرار تثبيت مباشر (Chrome / Edge على أندرويد والكمبيوتر)
+  let deferred;
+  const btn = document.getElementById('installBtn');
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; btn.style.display = 'block'; });
+  btn.onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; btn.style.display = 'none'; };
+  addEventListener('appinstalled', () => { btn.textContent = '✅ اتثبت!'; });
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
